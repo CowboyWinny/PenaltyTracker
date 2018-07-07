@@ -4,10 +4,14 @@
 #include <vector>
 #include <string>
 /* TODO
-*	search by shape - ball
-*	search by hist - goal and frames with goal
-*	draw strikes map
-*	template matching for goal ???
+*	Search frames by histogram
+*	Search goal by matchTracking - done
+*	Track ball after strike
+*	Affine or homography for finding point of shoot
+*	Maybe: detect player in area around ball
+*	Create picture w/ shoots for every team: if I can detect player,
+*	then automatically count points,
+*	else shoot by shoot
 */
 using namespace cv;
 using namespace std;
@@ -110,10 +114,18 @@ void Canny_detector(const Mat& gray_image)
 
 int main(int argc, char* argv[])
 {
-	Mat goal_picture, gray_image;
-	VideoCapture cap("C:\\Users\\cowbo\\Documents\\C++\\PenaltyTracker\\Rus-Esp_penalty.mp4");
-	goal_picture = imread("C:\\Users\\cowbo\\Documents\\C++\\PenaltyTracker\\goal.jpg");
+	Mat goal_picture, gray_goal_picture, gray_image;
+	VideoCapture cap("Rus-Esp_penalty.mp4");
+
+	goal_picture = imread("goal_bl.jpg");
+	cvtColor(goal_picture, gray_goal_picture, COLOR_BGR2GRAY);
+	threshold(gray_goal_picture, gray_goal_picture, 220, 255, THRESH_BINARY);
+
+	namedWindow("img");
+	imshow("img", gray_goal_picture);
+
 	//Ptr<LineSegmentDetector> ls = createLineSegmentDetector(LSD_REFINE_STD);
+
 
 	if (cap.isOpened() == false)
 	{
@@ -150,10 +162,18 @@ int main(int argc, char* argv[])
 		cvtColor(frame, hsv, COLOR_BGR2HSV);
 
 		Mat gray_image;
+		Mat goal_selected_image;
 		cvtColor(frame, gray_image, COLOR_BGR2GRAY);
+		threshold(gray_image, gray_image, 220, 255, THRESH_BINARY); //Gray
 
-		threshold(gray_image, gray_image, 190, 255, THRESH_BINARY); //Gray
+		matchTemplate(gray_image, gray_goal_picture, goal_selected_image, CV_TM_CCOEFF);//CCOEFF
 
+		double minval, maxval;
+		Point minloc, maxloc;
+
+		minMaxLoc(goal_selected_image, &minval, &maxval, &minloc, &maxloc);
+		normalize(goal_selected_image, goal_selected_image,1,0,CV_MINMAX);
+		rectangle(frame, Point(minloc.x, minloc.y), Point(minloc.x+goal_picture.cols-1, minloc.y+goal_picture.rows-1), CV_RGB(255, 0, 0), 1, 8);
 		//Canny_detector(gray_image);
 
 		resize(gray_image, gray_image, Size(800, 600));
@@ -162,6 +182,8 @@ int main(int argc, char* argv[])
 		//ls->drawSegments(gray_image, lines_std);
 
 		histogram_vs(hsv);
+		namedWindow("img2");
+		imshow("img2", goal_selected_image);
 
 		imshow(window_name_gray, gray_image);
 		imshow("Original", frame);

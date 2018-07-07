@@ -1,2 +1,2 @@
-MS Visual Studio 2017 project.
+Eclipse project for Linux.
 Needs installed OpenCV library.
