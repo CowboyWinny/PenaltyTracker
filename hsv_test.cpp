@@ -152,8 +152,6 @@ int main(int argc, char* argv[])
 		Mat frame;
 		bool bSuccess = cap.read(frame); // read a new frame from video
 		
-		vector<Vec4f> lines_std;
-
 		//Breaking the while loop at the end of the video
 		if (bSuccess == false)
 		{
