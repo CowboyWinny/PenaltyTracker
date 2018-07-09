@@ -1,11 +1,14 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/highgui.hpp>
+#include <opencv2/features2d.hpp>
+#include <opencv2/imgproc.hpp>
 #include <iostream>
 #include <vector>
 #include <string>
 /* TODO
 *	Search frames by histogram
 *	Search goal by matchTracking - done
+*	Search goal in 5-50 frames, then calc middle point, then show
 *	Track ball after strike
 *	Affine or homography for finding point of shoot
 *	Maybe: detect player in area around ball
@@ -115,7 +118,7 @@ void Canny_detector(const Mat& gray_image)
 int main(int argc, char* argv[])
 {
 	Mat goal_picture, gray_goal_picture, gray_image;
-	VideoCapture cap("Rus-Esp_penalty.mp4");
+	VideoCapture cap("Rus-Cro_penalty.mp4");
 
 	goal_picture = imread("goal_bl.jpg");
 	cvtColor(goal_picture, gray_goal_picture, COLOR_BGR2GRAY);
@@ -172,7 +175,8 @@ int main(int argc, char* argv[])
 		Point minloc, maxloc;
 
 		minMaxLoc(goal_selected_image, &minval, &maxval, &minloc, &maxloc);
-		normalize(goal_selected_image, goal_selected_image,1,0,CV_MINMAX);
+		//normalize(goal_selected_image, goal_selected_image,1,0,CV_MINMAX);
+		normalize(goal_selected_image, goal_selected_image,0,1,CV_MINMAX, -1, Mat());
 		rectangle(frame, Point(minloc.x, minloc.y), Point(minloc.x+goal_picture.cols-1, minloc.y+goal_picture.rows-1), CV_RGB(255, 0, 0), 1, 8);
 		//Canny_detector(gray_image);
 
