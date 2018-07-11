@@ -1,13 +1,14 @@
-#include <opencv2/opencv.hpp>
-#include <opencv2/highgui.hpp>
-#include <opencv2/features2d.hpp>
-#include <opencv2/imgproc.hpp>
-#include <iostream>
-#include <vector>
-#include <string>
+#include <opencv2/tracking.hpp>
 
-#include "Tracker.hpp"
-
-using namespace cv;
+#include "Tracker_Custom.hpp"
 using namespace std;
+using namespace cv;
 
+int main()
+{
+	cout << "1";
+	Tracker_Custom tr("Rus-Cro_penalty.mp4", "goal_bl.jpg", "test_image.jpg", "ball.jpg");
+	cout << "2";
+	tr.workcycle();
+	return 0;
+}
